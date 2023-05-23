@@ -1,0 +1,15 @@
+{
+  "name": "dictafone-app",
+  "version": "1.0.0",
+  "description": "Speech-to-text note taking dictation web app",
+  "main": "dictafone.js",
+  "scripts": {
+    "start": "browser-sync . --watch --host 0.0.0.0 --https",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jerome Lecomte <jerome@herebefrogs.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.29.3"
+  }
+}
