@@ -1,10 +1,11 @@
-recorder = null;
+let recorder = null;
 
 function startRecording() {
   recorder.start();
   btn_start.style.display = 'none';
   btn_pause.style.display = 'inline';
   btn_stop.style.display = 'inline';
+  // worry about speech to text here
 }
 
 function stopRecording() {
@@ -28,7 +29,14 @@ function resumeRecording() {
   btn_resume.style.display = 'none';
   btn_pause.style.display = 'inline';
   btn_stop.style.display = 'inline';
+}
 
+function saveAudioRecording(event) {
+  const audioUrl = URL.createObjectURL(event.data);
+  const audio = new Audio(audioUrl);
+  audio.controls = true;
+  document.getElementById('files').appendChild(audio);
+  // also worry about persistence at this point
 }
 
 
@@ -56,6 +64,7 @@ async function onload() {
   recorder = await getAudioRecorder();
 
   if (recorder) {
+    recorder.ondataavailable = saveAudioRecording;
     btn_start.onclick = startRecording;
     btn_stop.onclick = stopRecording;
     btn_pause.onclick = pauseRecording;
