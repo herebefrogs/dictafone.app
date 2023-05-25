@@ -42,30 +42,19 @@ function resumeRecording() {
   lastTime = performance.now();
 }
 
-function saveAudioRecording(event) {
+function onAudioRecordingStopped(event) {
   // give a bit of time for the transcript to be completed
   // as recording stop and recognition stop are 2 separate events
   setTimeout(() => {
-    const audioUrl = URL.createObjectURL(event.data);
-    const audio = new Audio(audioUrl);
-    audio.controls = true;
+    saveAudioRecording(event.data, transcript.join('\n'))
 
-    const article = document.createElement('article');
-    article.appendChild(audio);
-    const text = document.createElement('p');
-    text.innerText = transcript.join('\n');
-    article.appendChild(text);
-
-    document.getElementById('files').appendChild(article);
+    appendAudioRecordingElement(createAudioRecordingElement(event.data, transcript.join('\n')));
 
     live_transcript.innerText = '';
   }, 250);
-
-
-  // also worry about persistence at this point
 }
 
-function saveTranscription(event) {
+function onNewTranscriptionAvailable(event) {
   const result = event.results[event.resultIndex];
   if (result.isFinal) {
     const now = performance.now();
@@ -77,6 +66,63 @@ function saveTranscription(event) {
   }
 }
 
+function getRecordings() {
+  return JSON.parse(localStorage.getItem('recordings') || '[]');
+}
+
+function saveRecordings(recordings) {
+  localStorage.setItem('recordings', JSON.stringify(recordings));
+}
+
+function readAudioRecording({ audio, size, transcript, type}) {
+  const arrayBuffer = Uint8Array.from(audio, c => c.charCodeAt(0)).buffer;
+  const audioBlob = new Blob([arrayBuffer], { type: type });
+  // sanity check
+  if (audioBlob.size !== size) {
+    console.error('audio blob size does not match expected size', size, transcript, audio, type)
+    return document.createElement('p');
+  }
+  return createAudioRecordingElement(audioBlob, transcript);
+}
+
+// save audio recording and full transcription to localStorage
+function saveAudioRecording(audioBlob, transcript) {
+  audioBlob.arrayBuffer().then(data => {
+    let offset = 0;
+    let audio = '';
+    // if the array buffer is too large, it will exceed the maximum call stack size
+    // for String.fromCharCode.apply() so encode it in small chunks
+    while (offset < audioBlob.size) {
+      const chunk = data.slice(offset, Math.min(offset + 1024, audioBlob.size));
+      offset += 1024;
+      audio += String.fromCharCode.apply(null, new Uint8Array(chunk));
+    }
+
+    const recordings = getRecordings();
+    recordings.push({ audio, size: audioBlob.size, transcript, type: audioBlob.type });
+    saveRecordings(recordings);
+  });
+}
+
+function appendAudioRecordingElement(audioRecordingElement) {
+  document.getElementById('files').appendChild(audioRecordingElement);
+}
+
+function createAudioRecordingElement(audioBlob, fullTranscript) {
+  const article = document.createElement('article');
+
+  const audioUrl = URL.createObjectURL(audioBlob);
+  const audio = new Audio(audioUrl);
+  audio.controls = true;
+  article.appendChild(audio);
+
+  const text = document.createElement('p');
+  text.innerText = fullTranscript;
+  article.appendChild(text);
+
+  return article;
+}
+
 function formatDigit(d) {
   return d < 10 ? '0' + d : d;
 }
@@ -86,7 +132,7 @@ function formatElapsedTime() {
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time - hours * 3600) / 60);
   const seconds = Math.floor((time - hours * 3600 - minutes * 60))
-  return `[${formatDigit(hours)}:${formatDigit(minutes)}:${formatDigit(seconds)}]`;
+  return `[${hours ? formatDigit(hours) + ':' : ''}${formatDigit(minutes)}:${formatDigit(seconds)}]`;
 }
 
 
@@ -131,8 +177,8 @@ async function onload() {
   recognition = getSpeechRecognition();
 
   if (recorder && recognition) {
-    recorder.ondataavailable = saveAudioRecording;
-    recognition.onresult = saveTranscription;
+    recorder.ondataavailable = onAudioRecordingStopped;
+    recognition.onresult = onNewTranscriptionAvailable;
     btn_start.onclick = startRecording;
     btn_stop.onclick = stopRecording;
     btn_pause.onclick = pauseRecording;
@@ -140,6 +186,7 @@ async function onload() {
     btn_stop.style.display = 'none';
     btn_pause.style.display = 'none';
     btn_resume.style.display = 'none';
+    getRecordings().map(readAudioRecording).forEach(appendAudioRecordingElement);
   }
 }
 
