@@ -45,10 +45,10 @@ function resumeRecording() {
 function onAudioRecordingStopped(event) {
   // give a bit of time for the transcript to be completed
   // as recording stop and recognition stop are 2 separate events
-  setTimeout(() => {
-    saveAudioRecording(event.data, transcript.join('\n'))
+  setTimeout(async () => {
+    const recording = await saveAudioRecording(event.data, transcript.join('\n'))
 
-    appendAudioRecordingElement(createAudioRecordingElement(event.data, transcript.join('\n')));
+    appendAudioRecordingElement(createAudioRecordingElement(recording));
 
     live_transcript.innerText = '';
   }, 250);
@@ -74,50 +74,62 @@ function saveRecordings(recordings) {
   localStorage.setItem('recordings', JSON.stringify(recordings));
 }
 
-function readAudioRecording({ audio, size, transcript, type}) {
-  const arrayBuffer = Uint8Array.from(audio, c => c.charCodeAt(0)).buffer;
-  const audioBlob = new Blob([arrayBuffer], { type: type });
+function readAudioRecording(recording) {
+  const arrayBuffer = Uint8Array.from(recording.audio, c => c.charCodeAt(0)).buffer;
+  const audioBlob = new Blob([arrayBuffer], { type: recording.type });
   // sanity check
-  if (audioBlob.size !== size) {
-    console.error('audio blob size does not match expected size', size, transcript, audio, type)
+  if (audioBlob.size !== recording.size) {
+    console.error('audio blob size does not match expected size', recording.size, recording.transcript, recording.audio, recording.type)
     return document.createElement('p');
   }
-  return createAudioRecordingElement(audioBlob, transcript);
+  recording.blob = audioBlob;
+  return createAudioRecordingElement(recording);
 }
 
 // save audio recording and full transcription to localStorage
-function saveAudioRecording(audioBlob, transcript) {
-  audioBlob.arrayBuffer().then(data => {
-    let offset = 0;
-    let audio = '';
-    // if the array buffer is too large, it will exceed the maximum call stack size
-    // for String.fromCharCode.apply() so encode it in small chunks
-    while (offset < audioBlob.size) {
-      const chunk = data.slice(offset, Math.min(offset + 1024, audioBlob.size));
-      offset += 1024;
-      audio += String.fromCharCode.apply(null, new Uint8Array(chunk));
-    }
+async function saveAudioRecording(audioBlob, transcript) {
+  const recordings = getRecordings();
+  const name = prompt('Enter a name for this recording', 'Recording ' + (recordings.length + 1));
+  const date = Date.now();
 
-    const recordings = getRecordings();
-    recordings.push({ audio, size: audioBlob.size, transcript, type: audioBlob.type });
-    saveRecordings(recordings);
-  });
+  const data = await audioBlob.arrayBuffer()
+  let offset = 0;
+  let audio = '';
+  // if the array buffer is too large, it will exceed the maximum call stack size
+  // for String.fromCharCode.apply() so encode it in small chunks
+  while (offset < audioBlob.size) {
+    const chunk = data.slice(offset, Math.min(offset + 1024, audioBlob.size));
+    offset += 1024;
+    audio += String.fromCharCode.apply(null, new Uint8Array(chunk));
+  }
+
+  const recording = { audio, date, name, size: audioBlob.size, transcript, type: audioBlob.type };
+
+  recordings.push(recording);
+  saveRecordings(recordings);
+
+  recording.blob = audioBlob;
+  return recording;
 }
 
 function appendAudioRecordingElement(audioRecordingElement) {
   document.getElementById('files').appendChild(audioRecordingElement);
 }
 
-function createAudioRecordingElement(audioBlob, fullTranscript) {
+function createAudioRecordingElement(recording) {
   const article = document.createElement('article');
 
-  const audioUrl = URL.createObjectURL(audioBlob);
+  const dateName = document.createElement('p');
+  dateName.innerText = `${new Date(recording.date).toLocaleString()} - ${recording.name}`;
+  article.appendChild(dateName);
+
+  const audioUrl = URL.createObjectURL(recording.blob);
   const audio = new Audio(audioUrl);
   audio.controls = true;
   article.appendChild(audio);
 
   const text = document.createElement('p');
-  text.innerText = fullTranscript;
+  text.innerText = recording.transcript;
   article.appendChild(text);
 
   return article;
