@@ -1,18 +1,14 @@
+import { Transcripter } from './transcripter.js';
+
 let recorder = null;
-let recognition = null;
-let transcript = null;
-let lastTime = 0
-let elapsedTime = 0;
+let transcripter = null;
 
 function startRecording() {
   recorder.start();
   btn_start.style.display = 'none';
   btn_pause.style.display = 'inline';
   btn_stop.style.display = 'inline';
-  recognition.start();
-  transcript = [];
-  lastTime = performance.now();
-  elapsedTime = 0;
+  transcripter.start();
 }
 
 function stopRecording() {
@@ -21,8 +17,7 @@ function stopRecording() {
   btn_pause.style.display = 'none';
   btn_resume.style.display = 'none';
   btn_start.style.display = 'inline';
-  recognition.stop();
-  elapsedTime += performance.now() - lastTime;
+  transcripter.stop();
 }
 
 function pauseRecording() {
@@ -31,7 +26,7 @@ function pauseRecording() {
   btn_start.style.display = 'none';
   btn_resume.style.display = 'inline';
   btn_stop.style.display = 'inline';
-  elapsedTime += performance.now() - lastTime;
+  transcripter.pause();
 }
 
 function resumeRecording() {
@@ -39,31 +34,19 @@ function resumeRecording() {
   btn_resume.style.display = 'none';
   btn_pause.style.display = 'inline';
   btn_stop.style.display = 'inline';
-  lastTime = performance.now();
+  transcripter.resume();
 }
 
 function onAudioRecordingStopped(event) {
   // give a bit of time for the transcript to be completed
   // as recording stop and recognition stop are 2 separate events
   setTimeout(async () => {
-    const recording = await saveAudioRecording(event.data, transcript.join('\n'))
+    const recording = await saveAudioRecording(event.data, transcripter.text)
 
     appendAudioRecordingElement(createAudioRecordingElement(recording));
 
     live_transcript.innerText = '';
   }, 250);
-}
-
-function onNewTranscriptionAvailable(event) {
-  const result = event.results[event.resultIndex];
-  if (result.isFinal) {
-    const now = performance.now();
-    elapsedTime += now - lastTime;
-    lastTime = now;
-
-    transcript.push(`${formatElapsedTime()} ${result[0].transcript}`);
-    live_transcript.innerText = transcript.join('\n');
-  }
 }
 
 function getRecordings() {
@@ -135,19 +118,6 @@ function createAudioRecordingElement(recording) {
   return article;
 }
 
-function formatDigit(d) {
-  return d < 10 ? '0' + d : d;
-}
-
-function formatElapsedTime() {
-  const time = elapsedTime / 1000;
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time - hours * 3600) / 60);
-  const seconds = Math.floor((time - hours * 3600 - minutes * 60))
-  return `[${hours ? formatDigit(hours) + ':' : ''}${formatDigit(minutes)}:${formatDigit(seconds)}]`;
-}
-
-
 function displayError(msg) {
   document.getElementById('error').innerText = msg;
   console.error(msg);
@@ -160,7 +130,7 @@ async function getAudioRecorder() {
   }
   
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     return new MediaRecorder(stream);
   } catch (err) {
     displayError('failed to access microphone due to ' + err);
@@ -168,29 +138,16 @@ async function getAudioRecorder() {
   }
 }
 
-function getSpeechRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    displayError('SpeechRecognition not supported on this browser.');
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  recognition.continuous = true;
-  return recognition
-}
 
 async function onload() {
   recorder = await getAudioRecorder();
-  recognition = getSpeechRecognition();
+  transcripter = new Transcripter();
 
-  if (recorder && recognition) {
+  if (recorder && transcripter) {
     recorder.ondataavailable = onAudioRecordingStopped;
-    recognition.onresult = onNewTranscriptionAvailable;
+    transcripter.addEventListener('transcript_updated', (e) => {
+      live_transcript.innerText = e.detail.text;
+    });
     btn_start.onclick = startRecording;
     btn_stop.onclick = stopRecording;
     btn_pause.onclick = pauseRecording;
