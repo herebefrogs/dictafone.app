@@ -1,3 +1,31 @@
+const punctuation = {
+  'en-US': {
+    'full stop': '.',
+    'comma': ',',
+    'question mark': '?',
+    'exclamation mark': '!',
+    'semicolon': ';',       // must be before colon to avoid getting semi: ahaha
+    'colon': ':',
+    'dash': '-',
+    'hyphen': '-',
+    'ellipsis': '...',
+    'open parenthesis': '(',
+    'close parenthesis': ')',
+    'open quote': '"',
+    'close quote': '"',
+    'open square bracket': '[',
+    'close square bracket': ']',
+    'open curly bracket': '{',
+    'close curly bracket': '}',
+    'ampersand': '&',
+    'percent sign': '%',
+    'dollar sign': '$',
+    'pound sign': '£',
+    'euro sign': '€',
+    'yen sign': '¥',
+  }
+}
+
 export class Transcripter extends EventTarget {
   #recognition
   #lang = 'en-US'
@@ -74,8 +102,9 @@ export class Transcripter extends EventTarget {
   
     if (result.isFinal) {
       this.#tick();
-  
-      this.#transcript.push(`${this.#formatTime(this.#speechStartTime)} ${result[0].transcript}`);
+
+      const fragment = this.#replacePunctuation(result[0].transcript, punctuation[this.lang]);
+      this.#transcript.push(`${this.#formatTime(this.#speechStartTime)} ${fragment}`);
 
       this.dispatchEvent(new CustomEvent('transcript_updated', { detail: { text: this.text }}));
 
@@ -99,6 +128,13 @@ export class Transcripter extends EventTarget {
     const now = performance.now();
     this.#elapsedTime += now - this.#lastTime;
     this.#lastTime = now;
+  }
+
+  #replacePunctuation(text, punctuation) {
+    Object.entries(punctuation).forEach(([command, sign]) => {
+      text = text.replace(new RegExp(command, 'ig'), sign);
+    });
+    return text;
   }
 
   #formatDigit(d) {
