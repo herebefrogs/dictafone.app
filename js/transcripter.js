@@ -1,8 +1,10 @@
 export class Transcripter extends EventTarget {
   #recognition
   #lang = 'en-US'
+  #speechStartTime = 0;
   #lastTime = 0;
   #elapsedTime = 0;
+  #restartRecognition = false;
   #transcript = [];
 
   // public interface
@@ -19,6 +21,8 @@ export class Transcripter extends EventTarget {
     this.#recognition.maxAlternatives = 1;
     this.#recognition.continuous = true;
     this.#recognition.onresult = this.#onResults.bind(this);
+    this.#recognition.onspeechstart = this.#onSpeechStart.bind(this);
+    this.#recognition.onend = this.#onend.bind(this);
   }
 
   get lang() {
@@ -35,11 +39,13 @@ export class Transcripter extends EventTarget {
     this.#transcript = [];
     this.#lastTime = performance.now();
     this.#elapsedTime = 0;
+    this.#restartRecognition = false;
   }
 
   pause() {
     this.#recognition.stop();
     this.#elapsedTime += performance.now() - this.#lastTime;
+    this.#restartRecognition = false;
   }
 
   resume() {
@@ -49,41 +55,61 @@ export class Transcripter extends EventTarget {
 
   stop() {
     this.#recognition.stop();
-    this.#elapsedTime += performance.now() - this.#lastTime;
+    this.#restartRecognition = false;
   }
 
   get text() {
     return this.#transcript.join('\n');
   }
 
-  // todo: add pause/resume handlers to update elaspedTime and lastTime properly
-
   // event handlers
+  #onSpeechStart() {
+    this.#tick();
+
+    this.#speechStartTime = this.#elapsedTime;
+  }
+
   #onResults(event) {
     const result = event.results[event.resultIndex];
   
     if (result.isFinal) {
-      const now = performance.now();
-      this.#elapsedTime += now - this.#lastTime;
-      this.#lastTime = now;
+      this.#tick();
   
-      this.#transcript.push(`${this.#formatElapsedTime()} ${result[0].transcript}`);
+      this.#transcript.push(`${this.#formatTime(this.#speechStartTime)} ${result[0].transcript}`);
 
       this.dispatchEvent(new CustomEvent('transcript_updated', { detail: { text: this.text }}));
+
+      // unfortunately, "speechstart" event is fired only once after SpeechRecognition is started,
+      // so we need to manually restart SpeechRecognition after each result
+      // and hoping it won't miss any speech in between
+      this.#restartRecognition = true;
+      this.#recognition.stop();
+    }
+  }
+
+  #onend() {
+    if (this.#restartRecognition) {
+      this.#recognition.start();
     }
   }
 
   // private helpers
+
+  #tick() {
+    const now = performance.now();
+    this.#elapsedTime += now - this.#lastTime;
+    this.#lastTime = now;
+  }
+
   #formatDigit(d) {
     return d < 10 ? '0' + d : d;
   }
   
-  #formatElapsedTime() {
-    const time = this.#elapsedTime / 1000;
+  #formatTime(time) {
+    time = time / 1000;
     const hours = Math.floor(time / 3600);
     const minutes = Math.floor((time - hours * 3600) / 60);
     const seconds = Math.floor((time - hours * 3600 - minutes * 60))
     return `[${hours ? this.#formatDigit(hours) + ':' : ''}${this.#formatDigit(minutes)}:${this.#formatDigit(seconds)}]`;
   }
-  
 }
