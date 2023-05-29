@@ -43,7 +43,9 @@ function onAudioRecordingStopped(event) {
   setTimeout(async () => {
     const recording = await saveAudioRecording(event.data, transcripter.text)
 
-    appendAudioRecordingElement(createAudioRecordingElement(recording));
+    if (recording) {
+      appendAudioRecordingElement(createAudioRecordingElement(recording));
+    }
 
     live_transcript.innerText = '';
   }, 250);
@@ -72,7 +74,12 @@ function readAudioRecording(recording) {
 // save audio recording and full transcription to localStorage
 async function saveAudioRecording(audioBlob, transcript) {
   const recordings = getRecordings();
-  const name = prompt('Enter a name for this recording', 'Recording ' + (recordings.length + 1));
+  const name = prompt('Enter a name for this transcript. Click "Cancel" to discard transcript.', 'Recording ' + (recordings.length + 1));
+
+  if (!name) {
+    return;
+  }
+
   const date = Date.now();
 
   const data = await audioBlob.arrayBuffer()
