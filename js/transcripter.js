@@ -1,3 +1,5 @@
+import { findRecording, saveRecording } from "./storage.js";
+
 const punctuation = {
   'en-US': {
     'full stop': '.',
@@ -29,11 +31,13 @@ const punctuation = {
 export class Transcripter extends EventTarget {
   #recognition
   #lang = 'en-US'
+  #transcript = [];
+  #transcriptName;
+
   #speechStartTime = 0;
   #lastTime = 0;
   #elapsedTime = 0;
   #restartRecognition = false;
-  #transcript = [];
 
   // public interface
   constructor() {
@@ -65,15 +69,15 @@ export class Transcripter extends EventTarget {
   start() {
     this.#recognition.start();
     this.#transcript = [];
+    this.#transcriptName = undefined;
     this.#lastTime = performance.now();
     this.#elapsedTime = 0;
-    this.#restartRecognition = false;
   }
 
   pause() {
     this.#recognition.stop();
-    this.#elapsedTime += performance.now() - this.#lastTime;
     this.#restartRecognition = false;
+    this.#elapsedTime += performance.now() - this.#lastTime;
   }
 
   resume() {
@@ -81,9 +85,10 @@ export class Transcripter extends EventTarget {
     this.#lastTime = performance.now();
   }
 
-  stop() {
+  stop(name) {
     this.#recognition.stop();
     this.#restartRecognition = false;
+    this.#transcriptName = name;
   }
 
   get text() {
@@ -106,19 +111,29 @@ export class Transcripter extends EventTarget {
       const fragment = this.#replacePunctuation(result[0].transcript, punctuation[this.lang]);
       this.#transcript.push(`${this.#formatTime(this.#speechStartTime)} ${fragment}`);
 
-      this.dispatchEvent(new CustomEvent('transcript_updated', { detail: { text: this.text }}));
-
       // unfortunately, "speechstart" event is fired only once after SpeechRecognition is started,
       // so we need to manually restart SpeechRecognition after each result
-      // and hoping it won't miss any speech in between
+      // and hope it won't miss any speech in between
       this.#restartRecognition = true;
       this.#recognition.stop();
+
+      this.dispatchEvent(new CustomEvent('transcript_updated', { detail: { text: this.text }}));
     }
   }
 
-  #onend() {
+  async #onend() {
     if (this.#restartRecognition) {
       this.#recognition.start();
+      this.#restartRecognition = false;
+    }
+    else if (this.#transcriptName) {
+      const recording = findRecording(this.#transcriptName);
+      recording.transcript = this.text;
+      await saveRecording(recording);
+
+      this.dispatchEvent(new CustomEvent('transcript_finalized', { detail: { recording }}));
+
+      this.#transcriptName = undefined;
     }
   }
 

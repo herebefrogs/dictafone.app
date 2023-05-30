@@ -1,3 +1,5 @@
+import { getRecordings, getRecordingsCount } from './storage.js';
+import { Recorder } from './recorder.js';
 import { Transcripter } from './transcripter.js';
 
 let recorder = null;
@@ -12,12 +14,16 @@ function startRecording() {
 }
 
 function stopRecording() {
-  recorder.stop();
-  btn_stop.style.display = 'none';
-  btn_pause.style.display = 'none';
-  btn_resume.style.display = 'none';
-  btn_start.style.display = 'inline';
-  transcripter.stop();
+  const name = prompt('Enter a name for this transcript. Click "Cancel" to discard transcript.', 'Recording ' + (getRecordingsCount() + 1));
+
+  if (name) {
+    recorder.stop(name);
+    btn_stop.style.display = 'none';
+    btn_pause.style.display = 'none';
+    btn_resume.style.display = 'none';
+    btn_start.style.display = 'inline';
+    transcripter.stop(name);
+  }
 }
 
 function pauseRecording() {
@@ -37,71 +43,6 @@ function resumeRecording() {
   transcripter.resume();
 }
 
-function onAudioRecordingStopped(event) {
-  // give a bit of time for the transcript to be completed
-  // as recording stop and recognition stop are 2 separate events
-  setTimeout(async () => {
-    const recording = await saveAudioRecording(event.data, transcripter.text)
-
-    if (recording) {
-      appendAudioRecordingElement(createAudioRecordingElement(recording));
-    }
-
-    live_transcript.innerText = '';
-  }, 250);
-}
-
-function getRecordings() {
-  return JSON.parse(localStorage.getItem('recordings') || '[]');
-}
-
-function saveRecordings(recordings) {
-  localStorage.setItem('recordings', JSON.stringify(recordings));
-}
-
-function readAudioRecording(recording) {
-  const arrayBuffer = Uint8Array.from(recording.audio, c => c.charCodeAt(0)).buffer;
-  const audioBlob = new Blob([arrayBuffer], { type: recording.type });
-  // sanity check
-  if (audioBlob.size !== recording.size) {
-    console.error('audio blob size does not match expected size', recording.size, recording.transcript, recording.audio, recording.type)
-    return document.createElement('p');
-  }
-  recording.blob = audioBlob;
-  return createAudioRecordingElement(recording);
-}
-
-// save audio recording and full transcription to localStorage
-async function saveAudioRecording(audioBlob, transcript) {
-  const recordings = getRecordings();
-  const name = prompt('Enter a name for this transcript. Click "Cancel" to discard transcript.', 'Recording ' + (recordings.length + 1));
-
-  if (!name) {
-    return;
-  }
-
-  const date = Date.now();
-
-  const data = await audioBlob.arrayBuffer()
-  let offset = 0;
-  let audio = '';
-  // if the array buffer is too large, it will exceed the maximum call stack size
-  // for String.fromCharCode.apply() so encode it in small chunks
-  while (offset < audioBlob.size) {
-    const chunk = data.slice(offset, Math.min(offset + 1024, audioBlob.size));
-    offset += 1024;
-    audio += String.fromCharCode.apply(null, new Uint8Array(chunk));
-  }
-
-  const recording = { audio, date, name, size: audioBlob.size, transcript, type: audioBlob.type };
-
-  recordings.push(recording);
-  saveRecordings(recordings);
-
-  recording.blob = audioBlob;
-  return recording;
-}
-
 function appendAudioRecordingElement(audioRecordingElement) {
   document.getElementById('files').appendChild(audioRecordingElement);
 }
@@ -113,7 +54,7 @@ function createAudioRecordingElement(recording) {
   dateName.innerText = `${new Date(recording.date).toLocaleString()} - ${recording.name}`;
   article.appendChild(dateName);
 
-  const audioUrl = URL.createObjectURL(recording.blob);
+  const audioUrl = URL.createObjectURL(recording.audio);
   const audio = new Audio(audioUrl);
   audio.controls = true;
   article.appendChild(audio);
@@ -130,30 +71,30 @@ function displayError(msg) {
   console.error(msg);
 }
 
-async function getAudioRecorder() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    displayError('MediaDevices or getUserMedia() not supported on this browser.');
-    return;
-  }
-  
+function onload() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    return new MediaRecorder(stream);
-  } catch (err) {
-    displayError('failed to access microphone due to ' + err);
-    return;
+    recorder = new Recorder();
+    transcripter = new Transcripter();
+  } catch(e) {
+    displayError(e.message);
   }
-}
-
-
-async function onload() {
-  recorder = await getAudioRecorder();
-  transcripter = new Transcripter();
 
   if (recorder && transcripter) {
-    recorder.ondataavailable = onAudioRecordingStopped;
     transcripter.addEventListener('transcript_updated', (e) => {
       live_transcript.innerText = e.detail.text;
+    });
+    transcripter.addEventListener('transcript_finalized', (e) => {
+      live_transcript.innerText = '';
+      // if the recording was saved first
+      if (e.detail.recording.audio) {
+        appendAudioRecordingElement(createAudioRecordingElement(e.detail.recording));
+      }
+    });
+    recorder.addEventListener('recording_finalized', (e) => {
+      // if the transcript was saved first
+      if (e.details.recording.transcript) {
+        appendAudioRecordingElement(createAudioRecordingElement(e.detail.recording));
+      }
     });
     btn_start.onclick = startRecording;
     btn_stop.onclick = stopRecording;
@@ -162,7 +103,7 @@ async function onload() {
     btn_stop.style.display = 'none';
     btn_pause.style.display = 'none';
     btn_resume.style.display = 'none';
-    getRecordings().map(readAudioRecording).forEach(appendAudioRecordingElement);
+    getRecordings().map(createAudioRecordingElement).forEach(appendAudioRecordingElement);
   }
 }
 
