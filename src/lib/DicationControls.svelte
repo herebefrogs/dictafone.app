@@ -1,6 +1,7 @@
 <script>
   import { speechRecognition } from "./speechRecognition";
   import { time } from "./time";
+  import { transcript } from "./transcript";
   
   let started = false;
   let paused = false;
@@ -9,6 +10,7 @@
     started = true;
     speechRecognition.start();
     time.start();
+    transcript.set([]);
   }
   const pause_dictation = () => {
     paused = true;

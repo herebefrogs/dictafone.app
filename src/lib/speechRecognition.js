@@ -3,13 +3,37 @@ import { readable } from 'svelte/store';
 import { time } from './time';
 import { transcript } from './transcript';
 
-let time_value = 0;
+let speech_start_time = 0;
+let current_time = 0;
+let restart_recognition = false;
+
+const onSpeechStart = () => {
+  speech_start_time = current_time;
+};
 
 const onResults = event => {
   const result = event.results[event.resultIndex];
   
   if (result.isFinal) {
-    transcript.update(transcript => transcript + '[' + time_value + '] ' + result[0].transcript + '\n');
+    transcript.update(transcript => [
+      ...transcript,
+      {
+        start_time: speech_start_time,
+        end_time: current_time,
+        text: result[0].transcript
+      }
+    ]);
+
+    // "speechstart" event is only fired once, so manually restart SpeechRecognition after each result
+    // hoping we won't miss any speech in between the stop() and start() calls
+    speechRecognition.stop(true);
+  }
+}
+
+const onEnd = () => {
+  if (restart_recognition) {
+    speechRecognition.start();
+    restart_recognition = false;
   }
 }
 
@@ -25,10 +49,12 @@ const createSpeechRecognition = () => {
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
   recognition.continuous = true;
+  recognition.onspeechstart = onSpeechStart;
   recognition.onresult = onResults;
+  recognition.onend = onEnd;
 
   lang.subscribe(lang => { recognition.lang = lang; });
-  time.subscribe(t => time_value = t);
+  time.subscribe(t => current_time = t);
 
   const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 
@@ -36,16 +62,17 @@ const createSpeechRecognition = () => {
     subscribe,
     start: () => {
       recognition.start();
-      transcript.set('');
     },
     pause: () => {
       recognition.stop();
+      restart_recognition = false;
     },
     resume: () => {
       recognition.start();
     },
-    stop: () => {
+    stop: (restart = false) => {
       recognition.stop();
+      restart_recognition = restart;
     }
   }
 }

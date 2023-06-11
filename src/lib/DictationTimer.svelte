@@ -1,12 +1,10 @@
 <script>
   import { time } from './time';
-  import { lang } from './lang';
-
-  const timeFormater = Intl.NumberFormat($lang, { maximumFractionDigits: 1, minimumFractionDigits: 1 })
-</script>
+  import { formatDuration } from './helpers/format';
+ </script>
 
 <div>
-  <section>Duration: {timeFormater.format($time)}</section>
+  <section>Duration: {formatDuration($time)}</section>
 </div>
 
 <style>
