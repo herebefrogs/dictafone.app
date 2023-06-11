@@ -8,11 +8,18 @@
 <main>
   <h1>Dictafone</h1>
 
-  <DictationLanguage/>
-  <DictationControls/>
-  <DictationTimer/>
+  <section class="controls">
+    <DictationLanguage/>
+    <DictationControls/>
+    <DictationTimer/>
+  </section>
   <DictationTranscript/>
 </main>
 
 <style>
+  .controls {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
 </style>

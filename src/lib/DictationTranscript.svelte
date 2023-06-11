@@ -14,6 +14,9 @@
 </section>
 
 <style>
+  section {
+    text-align: left;
+  }
   ul, li {
     list-style: none;
   }
