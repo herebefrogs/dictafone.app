@@ -54,7 +54,7 @@ const createSpeechRecognition = () => {
   recognition.onend = onEnd;
 
   lang.subscribe(lang => { recognition.lang = lang; });
-  time.subscribe(t => current_time = t);
+  time.subscribe(t => { current_time = t; });
 
   const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 
