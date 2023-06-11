@@ -1,5 +1,10 @@
 import { lang } from '../lang';
-import { get } from 'svelte/store';
+
+let numberFormatter;
+
+lang.subscribe(lang => {
+  numberFormatter = new Intl.NumberFormat(lang, { minimumIntegerDigits: 2, minimumFractionDigits:1, maximumFractionDigits: 1 });
+});
 
 const parseTime = (time) => {
   time /= 1000;
@@ -9,8 +14,7 @@ const parseTime = (time) => {
   return { hours, minutes, seconds };
 }
 
-const formatDigit = d => new Intl.NumberFormat(get(lang), { minimumIntegerDigits: 2, minimumFractionDigits:1, maximumFractionDigits: 1 }).format(d);
-//const formatDigit = d => d < 10 ? '0' + d : d;
+const formatDigit = d => numberFormatter.format(d);
 
 export const formatTime = (time) => {
   const { hours, minutes, seconds } = parseTime(time);

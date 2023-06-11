@@ -1,15 +1,15 @@
 import { lang } from './lang';
-import { get, readable } from 'svelte/store';
+import { readable } from 'svelte/store';
 import { time } from './time';
 import { transcript } from './transcript';
 
+let time_value = 0;
 
 const onResults = event => {
   const result = event.results[event.resultIndex];
   
   if (result.isFinal) {
-    // TODO it's a bit odd to use get(time) bevause $time doesn't work
-    transcript.update(transcript => transcript + '[' + get(time) + '] ' + result[0].transcript + '\n');
+    transcript.update(transcript => transcript + '[' + time_value + '] ' + result[0].transcript + '\n');
   }
 }
 
@@ -27,8 +27,8 @@ const createSpeechRecognition = () => {
   recognition.continuous = true;
   recognition.onresult = onResults;
 
-  // TODO recognition.lang = $lang ?
   lang.subscribe(lang => { recognition.lang = lang; });
+  time.subscribe(t => time_value = t);
 
   const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 
