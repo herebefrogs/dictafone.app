@@ -14,7 +14,7 @@ const onSpeechStart = () => {
 const onResults = event => {
   const result = event.results[event.resultIndex];
   
-  if (result.isFinal) {
+  if (result.isFinal && result[0].transcript) {
     transcript.update(transcript => [
       ...transcript,
       {
