@@ -19,16 +19,20 @@ const onSpeechStart = () => {
 const onResults = event => {
   const result = event.results[event.resultIndex];
   
-  if (result.isFinal && result[0].transcript) {
-    transcript.update(transcript => [
-      ...transcript,
-      {
-        start_time: speech_start_time,
-        end_time: time_value,
-        text: result[0].transcript
-      }
-    ]);
+  if (!result[0].transcript) {
+    return;
+  }
 
+  transcript.update(transcript => [
+    ...transcript.filter(t => t.end_time),
+    {
+      start_time: speech_start_time,
+      end_time: result.isFinal ? time_value : null,
+      text: result[0].transcript
+    }
+  ])
+
+  if (result.isFinal) {
     // "speechstart" event is only fired once, so manually restart SpeechRecognition after each result
     // hoping we won't miss any speech in between the stop() and start() calls
     speechRecognition.stop(true);
@@ -54,7 +58,7 @@ const createSpeechRecognition = () => {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.interimResults = false;
+  recognition.interimResults = true;
   recognition.maxAlternatives = 1;
   recognition.continuous = true;
   recognition.onspeechstart = onSpeechStart;

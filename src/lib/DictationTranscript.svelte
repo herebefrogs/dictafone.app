@@ -9,7 +9,9 @@
     <ul>
       <li>{formatTime(line.start_time)}</li>
       <li>{line.text}</li>
-      <li>{formatTime(line.end_time)}</li>
+      {#if line.end_time}
+        <li>{formatTime(line.end_time)}</li>
+      {/if}
     </ul>
   {/each}
 </section>
