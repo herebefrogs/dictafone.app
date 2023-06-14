@@ -1,19 +1,13 @@
 import { readable } from 'svelte/store';
-import { name } from './transcript';
+import { id } from './transcript';
 import { recordings } from './recordings';
 
-let name_value;
+let id_value;
 
 const onDataAvailable = event => {
   const audio = event.data;
 
-  const recording = {
-    audio,
-    date: Date.now(),
-    name: name_value,
-  }
-
-  recordings.upsertRecording(recording);
+  recordings.upsert({ audio, date: Date.now(), id: id_value });
 };
 
 const createMediaRecorder = () => {
@@ -30,7 +24,7 @@ const createMediaRecorder = () => {
       recorder.ondataavailable = onDataAvailable;
       set(recorder);
 
-      name.subscribe(n => name_value = n);
+      id.subscribe(i => id_value = i);
     })
     // TODO handle
     .catch(err => {

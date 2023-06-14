@@ -1,5 +1,5 @@
 <script>
-  import { name, transcript } from "./transcript";
+  import { id, name, transcript } from "./transcript";
   import { mediaRecorder } from "./mediaRecorder";
   import { recordings } from "./recordings";
   import { speechRecognition } from "./speechRecognition";
@@ -41,6 +41,7 @@
     time.stop();
 
     $name = prompt("Enter a name for this dictation. Click 'Cancel' to discard dictation", "Recording " + ($recordings.length + 1));
+    $id = $name ? crypto.randomUUID() : null;
   }
 </script>
 
