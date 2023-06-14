@@ -4,6 +4,7 @@
   import DictationRecordings from './lib/DictationRecordings.svelte';
   import DictationTimer from './lib/DictationTimer.svelte';
   import DictationTranscript from './lib/DictationTranscript.svelte';
+  import DictationVolumeVisualizer from './lib/DictationVolumeVisualizer.svelte';
   import { transcript } from './lib/transcript';
 </script>
 
@@ -14,6 +15,7 @@
     <nav class="controls">
       <DictationLanguage/>
       <DictationControls/>
+      <DictationVolumeVisualizer/>
       <DictationTimer/>
     </nav>
     <DictationTranscript transcript={$transcript}/>
