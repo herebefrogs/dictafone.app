@@ -1,14 +1,18 @@
 import { lang } from './lang';
 import { readable } from 'svelte/store';
+import { recordings } from './recordings';
 import { time } from './time';
-import { transcript } from './transcript';
+import { name, transcript } from './transcript';
 
 let speech_start_time = 0;
-let current_time = 0;
+let time_value = 0;
 let restart_recognition = false;
 
+let name_value;
+let transcript_value;
+
 const onSpeechStart = () => {
-  speech_start_time = current_time;
+  speech_start_time = time_value;
 };
 
 const onResults = event => {
@@ -19,7 +23,7 @@ const onResults = event => {
       ...transcript,
       {
         start_time: speech_start_time,
-        end_time: current_time,
+        end_time: time_value,
         text: result[0].transcript
       }
     ]);
@@ -34,6 +38,9 @@ const onEnd = () => {
   if (restart_recognition) {
     speechRecognition.start();
     restart_recognition = false;
+  }
+  else if (name_value) {
+    recordings.upsertRecording({ name: name_value, transcript: transcript_value });
   }
 }
 
@@ -54,7 +61,9 @@ const createSpeechRecognition = () => {
   recognition.onend = onEnd;
 
   lang.subscribe(lang => { recognition.lang = lang; });
-  time.subscribe(t => { current_time = t; });
+  time.subscribe(t => { time_value = t; });
+  name.subscribe(n => { name_value = n; });
+  transcript.subscribe(t => { transcript_value = t; });
 
   const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 

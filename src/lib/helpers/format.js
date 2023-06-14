@@ -2,10 +2,12 @@ import { lang } from '../lang';
 
 let number;
 let second;
+let date;
 
 lang.subscribe(lang => {
   number = new Intl.NumberFormat(lang, { minimumIntegerDigits: 2 });
   second = new Intl.NumberFormat(lang, { minimumIntegerDigits: 2, minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  date = new Intl.DateTimeFormat(lang, { dateStyle: "long", timeStyle: "medium" });
 });
 
 const parseTime = (time) => {
@@ -24,3 +26,5 @@ export const formatDuration = (time) => {
   const { hours, minutes, seconds } = parseTime(time);
   return `${hours ? number.format(hours) + 'h ' : ''}${minutes ? number.format(minutes) + 'm ' : ''}${second.format(seconds)}s`;
 }
+
+export const formatDate = (timestamp) => date.format(timestamp);

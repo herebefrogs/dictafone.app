@@ -1,19 +1,24 @@
 <script>
   import DictationControls from './lib/DicationControls.svelte';
   import DictationLanguage from './lib/DictationLanguage.svelte';
+  import DictationRecordings from './lib/DictationRecordings.svelte';
   import DictationTimer from './lib/DictationTimer.svelte';
   import DictationTranscript from './lib/DictationTranscript.svelte';
+  import { transcript } from './lib/transcript';
 </script>
 
 <main>
   <h1>Dictafone</h1>
 
-  <section class="controls">
-    <DictationLanguage/>
-    <DictationControls/>
-    <DictationTimer/>
+  <section>
+    <nav class="controls">
+      <DictationLanguage/>
+      <DictationControls/>
+      <DictationTimer/>
+    </nav>
+    <DictationTranscript transcript={$transcript}/>
   </section>
-  <DictationTranscript/>
+  <DictationRecordings/>
 </main>
 
 <style>

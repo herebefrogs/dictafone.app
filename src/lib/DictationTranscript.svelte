@@ -1,10 +1,11 @@
 <script>
-  import { transcript } from "./transcript";
   import { formatTime } from "./helpers/format";
+
+  export let transcript;
 </script>
 
 <section>
-  {#each $transcript as line}
+  {#each transcript as line}
     <ul>
       <li>{formatTime(line.start_time)}</li>
       <li>{line.text}</li>
