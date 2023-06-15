@@ -1,40 +1,39 @@
 <script>
-  import { id, name, transcript } from "./transcript";
+  import { started, paused } from "./dictation";
   import { mediaRecorder } from "./mediaRecorder";
   import { recordings } from "./recordings";
   import { speechRecognition } from "./speechRecognition";
   import { time } from "./time";
+  import { id, name, transcript } from "./transcript";
   
-  let started = false;
-  let paused = false;
-
   const start_dictation = () => {
-    started = true;
+    $started = true;
 
     $mediaRecorder.start();
     speechRecognition.start();
     time.start();
 
-    name.set(null);
-    transcript.set([]);
+    $id = null;
+    $name = null;
+    $transcript = [];
   }
   const pause_dictation = () => {
-    paused = true;
+    $paused = true;
 
     $mediaRecorder.pause();
     speechRecognition.pause();
     time.pause();
   }
   const resume_dictation = () => {
-    paused = false;
+    $paused = false;
 
     $mediaRecorder.resume();
     speechRecognition.resume();
     time.resume();
   }
   const stop_dictation = () => {
-    started = false;
-    paused = false;
+    $started = false;
+    $paused = false;
 
     $mediaRecorder.stop();
     speechRecognition.stop();
@@ -46,10 +45,10 @@
 </script>
 
 <section>
-  <button on:click={start_dictation}  class:hidden={started}>Start</button>
-  <button on:click={pause_dictation}  class:hidden={!started || paused}>Pause</button>
-  <button on:click={resume_dictation} class:hidden={!paused}>Resume</button>
-  <button on:click={stop_dictation}   class:hidden={!started}>Stop</button>
+  <button on:click={start_dictation}  class:hidden={$started}>Start</button>
+  <button on:click={pause_dictation}  class:hidden={!$started || $paused}>Pause</button>
+  <button on:click={resume_dictation} class:hidden={!$paused}>Resume</button>
+  <button on:click={stop_dictation}   class:hidden={!$started}>Stop</button>
 </section>
 
 <style>

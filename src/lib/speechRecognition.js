@@ -1,3 +1,4 @@
+import { paused, started } from './dictation';
 import { lang } from './lang';
 import { readable } from 'svelte/store';
 import { recordings } from './recordings';
@@ -5,11 +6,13 @@ import { time } from './time';
 import { id, name, transcript } from './transcript';
 
 let speech_start_time = 0;
-let time_value = 0;
 let restart_recognition = false;
 
 let id_value;
 let name_value;
+let paused_value;
+let started_value;
+let time_value = 0;
 let transcript_value;
 
 const onSpeechStart = () => {
@@ -33,9 +36,10 @@ const onResults = event => {
   ])
 
   if (result.isFinal) {
-    // "speechstart" event is only fired once, so manually restart SpeechRecognition after each result
-    // hoping we won't miss any speech in between the stop() and start() calls
-    speechRecognition.stop(true);
+    // "speechstart" event is only fired once, so manually restart SpeechRecognition
+    // after each result when dictation is not paused nor stopped,
+    // hoping we won't miss any speech in between stop() and start() calls
+    speechRecognition.stop(started_value && !paused_value);
   }
 }
 
@@ -65,10 +69,12 @@ const createSpeechRecognition = () => {
   recognition.onresult = onResults;
   recognition.onend = onEnd;
 
-  lang.subscribe(lang => { recognition.lang = lang; });
-  time.subscribe(t => { time_value = t; });
   id.subscribe(i => { id_value = i; });
+  lang.subscribe(lang => { recognition.lang = lang; });
   name.subscribe(n => { name_value = n; });
+  paused.subscribe(p => { paused_value = p; });
+  started.subscribe(s => { started_value = s; });
+  time.subscribe(t => { time_value = t; });
   transcript.subscribe(t => { transcript_value = t; });
 
   const { subscribe } = readable(recognition, () => () => { recognition.stop(); });

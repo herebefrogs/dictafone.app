@@ -1,0 +1,14 @@
+- indexedDB persistence & retrieval of past dictation recordings
+x delete recording
+- export transcript/audio
+- volume visualizer
+- Tailwind CSS for nicer UI
+- start/stop/pause/resume icons
+- language flags
+x in-progress transcript
+- better UI routing (SvelteKit)
+- animations
+
+- google analytics
+- google ad
+- copyright & donate (Paypal.me/herebefrogs)
