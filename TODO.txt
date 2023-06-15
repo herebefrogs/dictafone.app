@@ -1,7 +1,7 @@
 - indexedDB persistence & retrieval of past dictation recordings
 x delete recording
 - export transcript/audio
-- volume visualizer
+x volume visualizer
 - Tailwind CSS for nicer UI
 - start/stop/pause/resume icons
 - language flags

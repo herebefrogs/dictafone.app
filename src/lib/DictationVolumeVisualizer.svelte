@@ -1,11 +1,19 @@
 <script>
   import { volume } from "./microphoneVolume";
+  import { paused, started } from "./dictation";
 
-  $: width = ($volume / 100 * 13 + 2) + "px";
+  $: enabled = $started && !$paused;
+  $: borderWidth = ($volume / 100 * 13 + 2) + "px";
+  $: size = (20 - $volume / 100 * 5) + "px";
 </script>
 
 <div>
-  <div style:border-width={width}>
+  <div
+    class:enabled
+    style:border-width={borderWidth}
+    style:width={size}
+    style:height={size}
+  >
     &nbsp;
   </div>
 </div>
@@ -19,14 +27,16 @@
     justify-content: center;
   }
   div div {
-    width: 10px;
-    height: 10px;
-    background-color: #2962FF;  /* Material Design Blue A700 */
-    color: #E3F2FD; /* Material Design Blue 50 */
-
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    color: #E3F2FD; /* Material Design Blue 50 */
+    background-color: #455A64;  /* Material Design Blue Gray 700 */
+    border: solid #B0BEC5; /* Material Design Blue Gray 200 */
+  }
+  .enabled {
+    background-color: #2962FF;  /* Material Design Blue A700 */
     border: solid #BBDEFB; /* Material Design Blue 100 */
-    /* border-color:  #B0BEC5; /* Material Design Blue Gray 200 */
   }
 </style>
 
