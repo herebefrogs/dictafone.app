@@ -1,4 +1,5 @@
 import { paused, started } from './dictation';
+import { error } from './error';
 import { lang } from './lang';
 import { readable } from 'svelte/store';
 import { recordings } from './recordings';
@@ -56,9 +57,9 @@ const onEnd = () => {
 const createSpeechRecognition = () => {
   // @ts-ignore
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  // TODO handle
   if (!SpeechRecognition) {
-    throw new Error('SpeechRecognition not supported on this browser.');
+    error.set('SpeechRecognition not supported on this browser.');
+    return;
   }
 
   const recognition = new SpeechRecognition();

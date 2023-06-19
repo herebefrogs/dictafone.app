@@ -1,6 +1,7 @@
+import { error } from './error';
+import { recordings } from './recordings';
 import { readable } from 'svelte/store';
 import { id } from './transcript';
-import { recordings } from './recordings';
 
 let id_value;
 
@@ -12,12 +13,13 @@ const onDataAvailable = event => {
 
 const createMediaRecorder = () => {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    throw new Error('MediaDevices or getUserMedia() not supported on this browser.');
+    error.set('navigator.MediaDevices or navigator.getUserMedia() not supported on this browser.');
+    return;
   }
 
-  let recorder;
-
   const { subscribe } = readable(null, set => {
+    let recorder;
+
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       recorder = new MediaRecorder(stream);
@@ -26,12 +28,12 @@ const createMediaRecorder = () => {
 
       id.subscribe(i => id_value = i);
     })
-    // TODO handle
     .catch(err => {
-      throw new Error('Microphone not accessible due to ' + err);
+      error.set('Microphone not accessible due to ' + err);
+      set(null);
     });
 
-    return () => { recorder.stop(); }
+    return () => recorder && recorder.stop();
   });
 
   return {

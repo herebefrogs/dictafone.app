@@ -1,5 +1,6 @@
-import { readable } from "svelte/store";
 import { started, paused } from "./dictation";
+import { error } from "./error";
+import { readable } from "svelte/store";
 
 
 let analyser;
@@ -11,6 +12,7 @@ let set_value;
 const calculateVolume = () => {
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
+  // TODO maybe we should be looking at the time domain (volume change over time) instead of volume of inividual frequencies
   analyser.getByteFrequencyData(dataArray);
 
   const volume = Math.round(Math.sqrt(dataArray.reduce((sum, val) => sum += val*val, 0) / bufferLength));
@@ -39,6 +41,12 @@ const resetVolume = () => {
 const { subscribe } = readable(0, set => {
   set_value = set;
 
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    error.set('navigator.MediaDevices or navigator.getUserMedia() not supported on this browser.');
+    set(null);
+    return;
+  }
+
   navigator.mediaDevices.getUserMedia({ audio: true })
   .then(stream => {
     const audioContext = new AudioContext();
@@ -54,7 +62,8 @@ const { subscribe } = readable(0, set => {
     paused.subscribe(p => toggleVolume(started_value, p));
   })
   .catch(err => {
-    throw new Error('Microphone not accessible due to ' + err);
+   error.set('Microphone not accessible due to ' + err);
+   set(null);
   });
 
   return () => { resetVolume(); }
