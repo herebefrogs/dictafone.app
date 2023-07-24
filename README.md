@@ -1,12 +1,19 @@
-**Why is HMR not preserving my local component state?**
+State of things
+===============
+The essential features work on Chrome desktop in a very barebone way (no nice UI, no sensible routing, all in one page)
+- start/stop/pause/resume a transcription recording
+- live transcription with start/end times of each utterance (a group of sentences until there is a pause in diction)
+- read/listen/download/delete past transcripts
+- language selector (en/fr only but can be expanded)
+- speech volume visualizer ala Google Meet
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
+Why is it abandonned/not released?
+==================================
+Turns out Chrome on Android does not fire SpeechRecognition "result" events. This event is used to append new transcription snipped to the recording, therefore the live transcription never happens and the recording's transcript is always empty.
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+Further more, SpeechRecognition "end" event is only fired once. So even if "result" events were occuring, the transcription engine could not be restarted to catch the next
+utterance, leading to incomplete transcripts.
 
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+Mobile support is essential for the app to be useful, so there is little incentive
+in making it pretty/production ready if speech recognition doesn't work on one of the
+2 main smartphones (safari for iOS not tested)
