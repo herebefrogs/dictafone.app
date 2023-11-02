@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --open --host 0.0.0.0 --https true",
 		"build": "vite build",
 		"preview": "vite preview",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
@@ -12,6 +12,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
+		"@vitejs/plugin-basic-ssl": "^1.0.1",
 		"autoprefixer": "^10.4.14",
 		"daisyui": "^3.9.4",
 		"eslint": "^8.28.0",
