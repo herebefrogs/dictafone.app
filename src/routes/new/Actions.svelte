@@ -1,17 +1,14 @@
 <script>
-  import { onMount } from 'svelte';
-  import { started, paused, transcript } from "./dictation";
+  import { id, name, started, paused, transcript } from "./dictation";
   import { speechRecognition } from "./speechRecognition";
   import { time } from "./time";
-
-  onMount(() => {
-    speechRecognition.init();
-  })
 
   const start_dictation = () => {
     $started = true;
     time.start();
     speechRecognition.start();
+    $id = null;
+    $name = null;
     $transcript = [];
   }
 
@@ -32,6 +29,7 @@
     $paused = false;
     time.stop();
     speechRecognition.stop();
+    name_modal.showModal();
   }
 
 </script>

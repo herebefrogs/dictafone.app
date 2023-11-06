@@ -1,46 +1,24 @@
-import { /*id, name,*/ paused, started, transcript } from './dictation';
-// import { lang } from './lang';
+import { paused, started, transcript } from './dictation';
+import { lang } from '$lib/lang';
 import { readable } from 'svelte/store';
-// import { recordings } from './recordings';
 import { time } from './time';
+import { browser } from '$app/environment';
 
 let speech_start_time = 0;
 let restart_recognition = false;
 let recognition;
 
-// let id_value;
-// let name_value;
 let paused_value;
 let started_value;
 let time_value = 0;
 let transcript_value;
 
-// id.subscribe(i => { id_value = i; });
-// lang.subscribe(lang => { recognition.lang = lang; });
-// name.subscribe(n => { name_value = n; });
 paused.subscribe(p => { paused_value = p; });
 started.subscribe(s => { started_value = s; });
 time.subscribe(t => { time_value = t; });
 transcript.subscribe(t => { transcript_value = t; });
 
 const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
-
-
-const init = () => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    throw new Error('SpeechRecognition API not available on this browser.');
-  }
-
-  recognition = new SpeechRecognition();
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
-  recognition.continuous = true;
-  recognition.onspeechstart = onSpeechStart;
-  recognition.onresult = onResults;
-  recognition.onend = onEnd;
-  // NOTE: from empirical results, error events don't seem to be actionable so they are best ignored.
-}
 
 const onSpeechStart = e => {
   // record the starting time of a new line in the transcription
@@ -79,19 +57,33 @@ const onResults = event => {
 
 const onEnd = () => {
   // on Android, the SpeechRecognition engine stops automatically a few seconds after the last result
-  // so we need to restart it manually if dictation is not paused nor stopped (treating the user to
-  // a mic shutdown sound followed by a mic startup sound every time a restart happens... oh well)
+  // so we need to restart it manually if dictation is not paused nor stopped (this can treat the user
+  // to a mic shutdown sound followed by a mic startup sound every time a restart happens... oh well)
   if (restart_recognition || (started_value && !paused_value)) {
     restart_recognition = false;
     speechRecognition.start();
   }
-  // else if (id_value) {
-  //   recordings.upsert({ id: id_value, name: name_value, transcript: transcript_value });
-  // }
+}
+
+if (browser) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    throw new Error('SpeechRecognition API not available on this browser.');
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = true;
+  recognition.onspeechstart = onSpeechStart;
+  recognition.onresult = onResults;
+  recognition.onend = onEnd;
+  // NOTE: from empirical results, error events don't seem to be actionable so they are best ignored.
+
+  lang.subscribe(lang => { recognition.lang = lang; });
 }
 
 export const speechRecognition = {
-  init,
   subscribe,
   start: () => {
     recognition.start();

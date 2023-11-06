@@ -1,14 +1,13 @@
 <script>
   import Actions from './Actions.svelte';
-  import Transcript from './Transcript.svelte';
+  import NameModal from './NameModal.svelte';
   import { transcript } from './dictation';
   import { time } from './time';
+  import Transcript from '$lib/components/Transcript.svelte';
   import { formatDuration } from '$lib/helpers/format';
 </script>
 <!--
   p>there will all the components for a new transcript</p>
-transcript,
-duration counter,
 volume meter,
 
 language selector
@@ -24,5 +23,5 @@ language selector
 </div>
 
 <Transcript transcript={$transcript} />
- 
+<NameModal />
 <Actions />
