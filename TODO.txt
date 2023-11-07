@@ -1,0 +1,32 @@
+x indexedDB persistence & retrieval of past dictation recordings
+x delete recording
+- audio recording
+- export transcript/audio
+- volume visualizer
+- share file
+x better UI routing (SvelteKit)
+x Tailwind CSS for nicer UI
+x start/stop/pause/resume icons
+- language flags
+- volume icon
+x in-progress transcript
+- animations
+
+- google analytics
+- google ad
+- copyright & donate (Paypal.me/herebefrogs)
+
+
+design:
+- not a great experience to have to click the microphone icon twice: recording should start as soon as /new loads
+- pressing Enter in NameModal should trigger the Save action
+- duration on new transcript is .000 instead of .0
+bugs:
+- error banner in mobile mode: (x) is on top of error message instead of floating left
+- error thrown when speechRecognition isn't available (Firefox) isn't rendered in +error.svelte but in console instead as: Uncaught (in promise) 
+Object { status: 503, body: {…} }
+- on Safari, no result is final unless recognition is stopped :facepalm: it seems interim results always have a confidence of 1 whereas the last result after speech ends has a confidence between ]0, 1[ (excluded)
+  but adding if (resultFinal || (!result.isFinal && result[0].confidence !== 1)) { reco.stop()
+  is not good enough. Fixes Safari but causes recognition to be stopped more often than necessary on Chrome which lead to loss of words in the transcript.
+- page content slides up the navbar on all 3 pages
+- on new transcript page, live transcript doesn't scroll up and disappear under bottom action bar

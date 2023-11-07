@@ -1,12 +1,27 @@
-<p>there will be a list of past recordings</p>
+<script>
+  import { transcripts } from '$lib/stores/persistence';
+  import Loading from '$lib/components/Loading.svelte';
+  import TranscriptSummary from './TranscriptSummary.svelte';
+
+  let transcripts_value;
+
+  transcripts.subscribe(tv => transcripts_value = tv);
+</script>
+
+{#if !transcripts_value}
+<Loading />
+{:else if transcripts_value.length === 0}
+<div class="flex justify-center content-stretch mt-12">
+  <p>No transcripts yet.</p>
+</div>
+{:else}
+  {#each transcripts_value as transcript}
+  <TranscriptSummary transcript={transcript} />
+  {/each}
+{/if}
 
 
-<a href="/42" class="active">
-  <span class="btm-nav-label">Past recording #1</span>
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-  </svg>
-</a>
+
 
 
 <div class="btm-nav shadow">
