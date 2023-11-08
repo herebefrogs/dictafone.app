@@ -22,11 +22,13 @@ design:
 - pressing Enter in NameModal should trigger the Save action
 - duration on new transcript is .000 instead of .0
 bugs:
+- on Chrome for Android, navigator.mediaDevices.getUserMedia({ audio: true }) for the mic level prevents speech recognition from working...
+  no live transcript it a BIG BLOCKER
+- page content slides up the navbar on all 3 pages
+- on new transcript page, live transcript doesn't scroll up and disappear under bottom action bar
 - error banner in mobile mode: (x) is on top of error message instead of floating left
 - error thrown when speechRecognition isn't available (Firefox) isn't rendered in +error.svelte but in console instead as: Uncaught (in promise) 
 Object { status: 503, body: {…} }
 - on Safari, no result is final unless recognition is stopped :facepalm: it seems interim results always have a confidence of 1 whereas the last result after speech ends has a confidence between ]0, 1[ (excluded)
   but adding if (resultFinal || (!result.isFinal && result[0].confidence !== 1)) { reco.stop()
   is not good enough. Fixes Safari but causes recognition to be stopped more often than necessary on Chrome which lead to loss of words in the transcript.
-- page content slides up the navbar on all 3 pages
-- on new transcript page, live transcript doesn't scroll up and disappear under bottom action bar
