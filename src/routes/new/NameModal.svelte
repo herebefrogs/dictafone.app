@@ -1,6 +1,7 @@
 <script>
   import { browser } from '$app/environment';
   import { id, name, transcript } from './dictation';
+  import { time } from './time';
   import { transcripts } from '$lib/stores/persistence';
 
   let emptyName = false;
@@ -12,6 +13,7 @@
         id: $id,
         name: $name,
         date: Date.now(),
+        duration: $time,
         transcript: $transcript,
       })
       name_modal.close();

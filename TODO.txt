@@ -1,7 +1,7 @@
 x indexedDB persistence & retrieval of past dictation recordings
 x delete recording
 - audio recording
-- export transcript/audio
++ export transcript/audio
 x volume visualizer
 - share file
 x better UI routing (SvelteKit)

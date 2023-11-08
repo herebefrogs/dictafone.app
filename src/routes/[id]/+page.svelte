@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores';
-  import { formatDate } from '$lib/helpers/format'
+  import { formatDate, formatTime } from '$lib/helpers/format'
   import { transcripts } from '$lib/stores/persistence';
   import Transcript from '$lib/components/Transcript.svelte';
   import Loading from '$lib/components/Loading.svelte';
@@ -20,9 +20,9 @@
       {transcript.name}
     </h2>
     <h3>
-      <span class="text-xs">{formatDate(transcript.date)}</span>
+      <span class="text-xs">{formatDate(transcript.date)} - {formatTime(transcript.duration)} long</span>
     </h3>
-    duration, audioplayer
+    audioplayer
     <Transcript transcript={transcript.transcript} />
   </div>
 </div>
