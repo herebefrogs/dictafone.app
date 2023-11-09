@@ -47,6 +47,7 @@ function start(set) {
       throw new Error('MediaDevices API not available on this browser.');
     }
   
+    // BUG: this causes speech recognition to stop working on Chrome for Android
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       const audioContext = new AudioContext();

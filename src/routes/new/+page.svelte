@@ -6,6 +6,7 @@
   import { transcript } from './dictation';
   import { time } from './time';
   import { formatDuration } from '$lib/helpers/format';
+  import { isAndroid } from '$lib/helpers/mobile';
 </script>
 <!--
   p>there will all the components for a new transcript</p>
@@ -28,7 +29,10 @@ language selector
         </div>
       </div>
 
-      <MicLevel />
+      {#if !isAndroid}
+        <!-- this causes speech recognition to stop working on Chrome for Android -->
+        <MicLevel />
+      {/if}
     </div>
 
     <Transcript transcript={$transcript} />
