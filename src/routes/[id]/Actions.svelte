@@ -1,7 +1,7 @@
 <script>
   import { transcripts } from '$lib/stores/persistence';
   import { formatTime } from '$lib/helpers/format'
-  import { audio } from '../new/dictation';
+  import { audio } from '$lib/stores/transcript';
   import { isAndroid } from '$lib/helpers/mobile';
 
   export let transcript;

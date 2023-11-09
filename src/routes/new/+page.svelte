@@ -3,7 +3,7 @@
   import NameModal from './NameModal.svelte';
   import Transcript from '$lib/components/Transcript.svelte';
   import MicLevel from './MicLevel.svelte';
-  import { transcript } from './dictation';
+  import { lines } from '$lib/stores/transcript';
   import { time } from './time';
   import { formatDuration } from '$lib/helpers/format';
   import { isAndroid } from '$lib/helpers/mobile';
@@ -34,7 +34,7 @@ language selector
       {/if}
     </div>
 
-    <Transcript lines={$transcript} />
+    <Transcript lines={$lines} />
   </div>
 </div>
 <NameModal />

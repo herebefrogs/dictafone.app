@@ -1,4 +1,4 @@
-import { paused, started, transcript } from './dictation';
+import { paused, started, lines } from '$lib/stores/transcript';
 import { lang } from '$lib/lang';
 import { readable } from 'svelte/store';
 import { time } from './time';
@@ -11,12 +11,12 @@ let recognition;
 let paused_value;
 let started_value;
 let time_value = 0;
-let transcript_value;
+let lines_values;
 
 paused.subscribe(p => { paused_value = p; });
 started.subscribe(s => { started_value = s; });
 time.subscribe(t => { time_value = t; });
-transcript.subscribe(t => { transcript_value = t; });
+lines.subscribe(t => { lines_values = t; });
 
 const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 
@@ -37,8 +37,8 @@ const onResults = event => {
   // but it seems interim results always have a confidence of 0
   const resultFinal = (result.isFinal && result[0].confidence);
 
-  transcript.update(transcript => [
-    ...transcript.filter(t => t.end_time),
+  lines.update(lines => [
+    ...lines.filter(t => t.end_time),
     {
       start_time: speech_start_time,
       end_time: resultFinal ? time_value : null,

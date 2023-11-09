@@ -1,4 +1,4 @@
-import { started, paused } from './dictation';
+import { started, paused } from '$lib/stores/transcript';
 import { browser } from '$app/environment';
 import { readable } from 'svelte/store';
 

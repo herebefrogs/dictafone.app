@@ -12,4 +12,4 @@ export const audio = writable(null);
 
 export const name = writable(null);
 
-export const transcript = writable([]);
+export const lines = writable([]);

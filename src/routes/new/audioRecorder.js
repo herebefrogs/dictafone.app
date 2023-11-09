@@ -1,4 +1,4 @@
-import { audio } from './dictation';
+import { audio } from '$lib/stores/transcript';
 import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
 

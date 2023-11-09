@@ -1,6 +1,6 @@
 <script>
   import { browser } from '$app/environment';
-  import { id, audio, name, transcript } from './dictation';
+  import { id, audio, name, lines } from '$lib/stores/transcript';
   import { time } from './time';
   import { transcripts } from '$lib/stores/persistence';
 
@@ -14,7 +14,7 @@
         audio: $audio,
         date: Date.now(),
         duration: $time,
-        lines: $transcript,
+        lines: $lines,
         name: $name,
       })
       name_modal.close();

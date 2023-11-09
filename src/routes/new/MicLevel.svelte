@@ -1,6 +1,6 @@
 <script>
   import { micLevel } from './micLevel';
-  import { paused, started } from "./dictation";
+  import { paused, started } from '$lib/stores/transcript';
 
   $: enabled = $started && !$paused;
   // clamp micLevel between 0 and ~40

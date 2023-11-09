@@ -1,5 +1,5 @@
 <script>
-  import { id, name, started, paused, transcript } from './dictation';
+  import { id, name, started, paused, lines } from '$lib/stores/transcript';
   import { speechRecognition } from './speechRecognition';
   import { audioRecorder } from './audioRecorder'
   import { time } from './time';
@@ -11,7 +11,7 @@
     $audioRecorder.start();
     $id = null;
     $name = null;
-    $transcript = [];
+    $lines = [];
   }
 
   const pause_dictation = () => {
