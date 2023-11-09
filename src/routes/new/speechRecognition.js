@@ -1,5 +1,5 @@
 import { paused, started, lines } from '$lib/stores/transcript';
-import { lang } from '$lib/lang';
+import { lang } from '$lib/stores/lang';
 import { time } from './time';
 import { browser } from '$app/environment';
 

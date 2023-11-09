@@ -1,4 +1,4 @@
-import { lang } from '../lang';
+import { lang } from '$lib/stores/lang';
 
 let number;
 let second;
