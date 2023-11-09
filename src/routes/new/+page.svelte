@@ -35,7 +35,7 @@ language selector
       {/if}
     </div>
 
-    <Transcript transcript={$transcript} />
+    <Transcript lines={$transcript} />
   </div>
 </div>
 <NameModal />

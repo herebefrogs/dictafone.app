@@ -1,10 +1,10 @@
 <script>
   import { formatTime } from "$lib/helpers/format";
 
-  export let transcript;
+  export let lines;
 </script>
 
-{#each transcript as line}
+{#each lines as line}
 <p>
   [{formatTime(line.start_time)}] {line.text}
   {#if line.end_time}

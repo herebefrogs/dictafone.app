@@ -11,10 +11,10 @@
       $id = crypto.randomUUID();
       transcripts.upsert({
         id: $id,
-        name: $name,
         date: Date.now(),
         duration: $time,
-        transcript: $transcript,
+        lines: $transcript,
+        name: $name,
       })
       name_modal.close();
     } else {

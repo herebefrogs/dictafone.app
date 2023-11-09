@@ -23,9 +23,9 @@
       <span class="text-xs">{formatDate(transcript.date)} - {formatTime(transcript.duration)} long</span>
     </h3>
     audioplayer
-    <Transcript transcript={transcript.transcript} />
+    <Transcript lines={transcript.lines} />
   </div>
 </div>
 
-<Actions id={transcript.id} />
+<Actions transcript={transcript} />
 {/if}
