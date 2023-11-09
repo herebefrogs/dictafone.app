@@ -19,7 +19,6 @@ x in-progress transcript
 
 design:
 - not a great experience to have to click the microphone icon twice: recording should start as soon as /new loads
-- pressing Enter in NameModal should trigger the Save action
 - duration on new transcript is .000 instead of .0
 bugs:
 - on Chrome for Android, navigator.mediaDevices.getUserMedia({ audio: true }) for the mic level prevents speech recognition from working...
