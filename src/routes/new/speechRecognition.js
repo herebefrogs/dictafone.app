@@ -1,6 +1,5 @@
 import { paused, started, lines } from '$lib/stores/transcript';
 import { lang } from '$lib/lang';
-import { readable } from 'svelte/store';
 import { time } from './time';
 import { browser } from '$app/environment';
 
@@ -18,7 +17,6 @@ started.subscribe(s => { started_value = s; });
 time.subscribe(t => { time_value = t; });
 lines.subscribe(t => { lines_values = t; });
 
-const { subscribe } = readable(recognition, () => () => { recognition.stop(); });
 
 const onSpeechStart = e => {
   // record the starting time of a new line in the transcription
@@ -83,9 +81,7 @@ if (browser) {
   lang.subscribe(lang => { recognition.lang = lang; });
 }
 
-// TODO should put this into a readable store
 export const speechRecognition = {
-  subscribe,
   start: () => {
     recognition.start();
   },
