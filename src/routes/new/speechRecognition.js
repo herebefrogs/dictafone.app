@@ -83,6 +83,7 @@ if (browser) {
   lang.subscribe(lang => { recognition.lang = lang; });
 }
 
+// TODO should put this into a readable store
 export const speechRecognition = {
   subscribe,
   start: () => {

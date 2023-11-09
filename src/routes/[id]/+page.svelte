@@ -5,10 +5,11 @@
   import Transcript from '$lib/components/Transcript.svelte';
   import Loading from '$lib/components/Loading.svelte';
   import Actions from './Actions.svelte';
-
+  import { isAndroid } from '$lib/helpers/mobile';
+  
   let transcript;
 
-  transcripts.subscribe(() => transcript = transcripts.get($page.params.id));
+  transcripts.subscribe(() => { transcript = transcripts.get($page.params.id) });
 </script>
 
 {#if !transcript}
@@ -22,7 +23,9 @@
     <h3>
       <span class="text-xs">{formatDate(transcript.date)} - {formatTime(transcript.duration)} long</span>
     </h3>
-    audioplayer
+    {#if !isAndroid}
+    <audio src={URL.createObjectURL(transcript.audio)} controls></audio>
+    {/if}
     <Transcript lines={transcript.lines} />
   </div>
 </div>

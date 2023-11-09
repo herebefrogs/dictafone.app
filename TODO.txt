@@ -1,16 +1,16 @@
 x indexedDB persistence & retrieval of past dictation recordings
 x delete recording
-- audio recording
-+ export transcript/audio
+x audio recording
+x export transcript/audio
 x volume visualizer
-- share file
+- language selector
 x better UI routing (SvelteKit)
 x Tailwind CSS for nicer UI
 x start/stop/pause/resume icons
-- language flags
 x volume icon
 x in-progress transcript
-- animations
+~ share file
+~ animations
 
 - google analytics
 - google ad

@@ -1,6 +1,6 @@
-import { started, paused } from "./dictation";
-import { browser } from "$app/environment";
-import { readable } from "svelte/store";
+import { started, paused } from './dictation';
+import { browser } from '$app/environment';
+import { readable } from 'svelte/store';
 
 export const micLevel = readable(0, start);
 
@@ -43,10 +43,11 @@ function start(set) {
   }
   
   if (browser) {
-    if (!navigator?.mediaDevices.getUserMedia) {
+    if (!navigator.mediaDevices?.getUserMedia) {
       throw new Error('MediaDevices API not available on this browser.');
     }
   
+    // TODO maybe that should be delayed until after the user click start/resume/pause/stop?
     // BUG: this causes speech recognition to stop working on Chrome for Android
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {

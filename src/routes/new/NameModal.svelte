@@ -1,6 +1,6 @@
 <script>
   import { browser } from '$app/environment';
-  import { id, name, transcript } from './dictation';
+  import { id, audio, name, transcript } from './dictation';
   import { time } from './time';
   import { transcripts } from '$lib/stores/persistence';
 
@@ -11,6 +11,7 @@
       $id = crypto.randomUUID();
       transcripts.upsert({
         id: $id,
+        audio: $audio,
         date: Date.now(),
         duration: $time,
         lines: $transcript,

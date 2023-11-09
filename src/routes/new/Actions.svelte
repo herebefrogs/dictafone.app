@@ -1,12 +1,14 @@
 <script>
-  import { id, name, started, paused, transcript } from "./dictation";
-  import { speechRecognition } from "./speechRecognition";
-  import { time } from "./time";
+  import { id, name, started, paused, transcript } from './dictation';
+  import { speechRecognition } from './speechRecognition';
+  import { audioRecorder } from './audioRecorder'
+  import { time } from './time';
 
   const start_dictation = () => {
     $started = true;
     time.start();
     speechRecognition.start();
+    $audioRecorder.start();
     $id = null;
     $name = null;
     $transcript = [];
@@ -16,12 +18,14 @@
     $paused = true;
     time.pause();
     speechRecognition.pause();
+    $audioRecorder.pause();
   }
 
   const resume_dictation = () => {
     $paused = false;
     time.resume();
     speechRecognition.resume();
+    $audioRecorder.resume();
   }
 
   const stop_dictation = () => {
@@ -29,6 +33,7 @@
     $paused = false;
     time.stop();
     speechRecognition.stop();
+    $audioRecorder.stop();
     name_modal.showModal();
   }
 
