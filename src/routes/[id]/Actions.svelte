@@ -1,6 +1,6 @@
 <script>
   import { transcripts } from '$lib/stores/persistence';
-  import { formatTime } from '$lib/helpers/format'
+  import { formatTimestamp } from '$lib/helpers/format'
   import { audio } from '$lib/stores/transcript';
   import { isAndroid } from '$lib/helpers/mobile';
 
@@ -12,7 +12,7 @@
   }
 
   const transcript2blob = (lines) => new Blob(
-    lines.map(({start_time, end_time, text}, i) => `${i+1}\n${formatTime(start_time)} --> ${formatTime(end_time)}\n${text}\n\n`),
+    lines.map(({start_time, end_time, text}, i) => `${i+1}\n${formatTimestamp(start_time)} --> ${formatTimestamp(end_time)}\n${text}\n\n`),
     {type: 'text/plain'}
   );
 

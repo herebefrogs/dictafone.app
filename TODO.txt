@@ -18,11 +18,12 @@ x in-progress transcript
 
 
 design:
-1 duration on new transcript is .000 instead of .0
 - not a great experience to have to click the microphone icon twice: recording should start as soon as /new loads
 bugs:
 - on Chrome for Android, navigator.mediaDevices.getUserMedia({ audio: true }) for the mic level prevents speech recognition from working...
   no live transcript it a BIG BLOCKER
+  check iOS!!!
+- sometimes, saving a transcript leads to a everloading page because the record isn't saved in indexedDB
 2 page content slides up the navbar on all 3 pages
 3 on new transcript page, live transcript doesn't scroll up and disappear under bottom action bar
 - error banner in mobile mode: (x) is on top of error message instead of floating left

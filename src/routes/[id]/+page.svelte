@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores';
-  import { formatDate, formatTime } from '$lib/helpers/format'
+  import { formatDate, formatDuration } from '$lib/helpers/format'
   import { transcripts } from '$lib/stores/persistence';
   import Transcript from '$lib/components/Transcript.svelte';
   import Loading from '$lib/components/Loading.svelte';
@@ -21,7 +21,7 @@
       {transcript.name}
     </h2>
     <h3>
-      <span class="text-xs">{formatDate(transcript.date)} - {formatTime(transcript.duration)} long</span>
+      <span class="text-xs">{formatDate(transcript.date)} - {formatDuration(transcript.duration)} long</span>
     </h3>
     {#if !isAndroid}
     <audio src={URL.createObjectURL(transcript.audio)} controls></audio>
