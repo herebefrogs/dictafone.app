@@ -12,7 +12,7 @@ x in-progress transcript
 ~ share file
 ~ animations
 
-3 footer copyright & donate (Paypal.me/herebefrogs)
+1 footer copyright & donate (Paypal.me/herebefrogs)
 - google analytics
 - google ad
 
@@ -20,7 +20,6 @@ x in-progress transcript
 design:
 - not a great experience to have to click the microphone icon twice: recording should start as soon as /new loads
 bugs:
-1 on new transcript page, live transcript doesn't scroll up and disappear under bottom action bar
 2 sometimes, saving a transcript leads to a everloading page because the record isn't saved in indexedDB
 - on Chrome for Android, navigator.mediaDevices.getUserMedia({ audio: true }) for the mic level prevents speech recognition from working...
   no live transcript it a BIG BLOCKER

@@ -21,9 +21,8 @@
     <MicLevel />
   {/if}
 </div>
-<div class="container bg-base-100 m-4 p-4 text-neutral rounded-lg shadow-md">
-  <Transcript lines={$lines} />
-</div>
+
+<Transcript lines={$lines} />
 
 <!-- HACK: add enough padding at the bottom of the page that the
   Actions bottom nav won't mask the last lines of the Transcript -->
