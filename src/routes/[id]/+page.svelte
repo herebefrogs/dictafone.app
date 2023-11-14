@@ -16,7 +16,7 @@
 {#if !transcript}
 <Loading />
 {:else}
-<h2 class="text-xl font-bold text-neutral-content m-4 capitalize">
+<h2 class="text-xl font-bold mx-4 mt-4 capitalize">
   {transcript.name}
 </h2>
 <h3>

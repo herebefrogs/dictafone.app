@@ -9,7 +9,7 @@
 </script>
 
 <div class="container bg-base-100 p-4 rounded-lg shadow-md w-80">
-  <div class="text-neutral-content">Mic Level</div>
+  <div>Mic Level</div>
     <div class="flex justify-center h-12 items-center">
       <div
         class:bg-accent={enabled}
