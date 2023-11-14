@@ -47,7 +47,6 @@ function start(set) {
       throw new Error('MediaDevices API not available on this browser.');
     }
   
-    // TODO maybe that should be delayed until after the user click start/resume/pause/stop?
     // BUG: this causes speech recognition to stop working on Chrome for Android
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {

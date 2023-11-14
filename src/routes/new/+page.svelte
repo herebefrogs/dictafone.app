@@ -7,7 +7,6 @@
   import Duration from '$lib/components/Duration.svelte';
   import { lines } from '$lib/stores/transcript';
   import { time } from './time';
-  import { formatDuration } from '$lib/helpers/format';
   import { isAndroid } from '$lib/helpers/mobile';
 </script>
 
@@ -17,7 +16,7 @@
   <LanguageSelector />
 
   {#if !isAndroid}
-    <!-- this causes speech recognition to stop working on Chrome for Android -->
+    <!-- prevent audio recorder to block speech recognition from working on Chrome for Android -->
     <MicLevel />
   {/if}
 </div>

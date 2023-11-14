@@ -1,8 +1,14 @@
 import { audio } from '$lib/stores/transcript';
 import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
+import { isAndroid } from '$lib/helpers/mobile';
 
-let audioRecorder;
+let audioRecorder = readable({
+  start: () => {},
+  stop: () => {},
+  pause: () => {},
+  resume: () => {},
+});
 
 
 const onDataAvailable = event => {
@@ -12,6 +18,7 @@ const onDataAvailable = event => {
 function start(set) {
   let recorder;
 
+  // BUG: this causes speech recognition to stop working on Chrome for Android
   navigator.mediaDevices.getUserMedia({ audio: true })
   .then(stream => {
     recorder = new MediaRecorder(stream);
@@ -31,7 +38,10 @@ if (browser) {
     throw new Error('MediaDevices API not available on this browser.');
   }
 
-  audioRecorder = readable(null, start);
+  if (!isAndroid) {
+    // prevent audio recorder to block speech recognition from working on Chrome for Android
+    audioRecorder = readable(null, start);
+  }
 }
 
 export { audioRecorder };
