@@ -22,7 +22,7 @@
   <span class="text-xs m-4">{formatDate(transcript.date)}</span>
 </h3>
 
-<div class="container flex flex-col sm:flex-row m-4 gap-5">
+<div class="container flex flex-col sm:flex-row p-4 gap-5">
   <Duration value={transcript.duration} />
 
   {#if transcript.audio}
@@ -34,10 +34,6 @@
 </div>
 
 <Transcript lines={transcript.lines} />
-
-<!-- HACK: add enough padding at the bottom of the page that the
-  Actions bottom nav won't mask the last lines of the Transcript -->
-<div class="h-16" />
 
 <Actions transcript={transcript} />
 {/if}

@@ -10,7 +10,7 @@
   import { isAndroid } from '$lib/helpers/mobile';
 </script>
 
-<div class="container flex flex-col sm:flex-row m-4 gap-5">
+<div class="container flex flex-col sm:flex-row p-4 gap-5">
   <Duration value={$time} />
 
   <LanguageSelector />
@@ -22,10 +22,6 @@
 </div>
 
 <Transcript lines={$lines} />
-
-<!-- HACK: add enough padding at the bottom of the page that the
-  Actions bottom nav won't mask the last lines of the Transcript -->
-<div class="h-16" />
 
 <NameModal />
 

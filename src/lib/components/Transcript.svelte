@@ -4,7 +4,7 @@
   export let lines;
 </script>
 
-<div class="container bg-base-100 m-4 p-4 rounded-lg shadow-md">
+<div class="container bg-base-100 p-4 m-0 sm:m-4 rounded-lg shadow-md">
   <h2 class="mb-4">Transcript</h2>
   {#each lines as line}
   <p>

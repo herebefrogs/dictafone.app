@@ -3,7 +3,7 @@
 	import { messages } from '$lib/messages';
 </script>
 
-<navbar class="navbar bg-base-100 shadow sticky top-0">
+<navbar class="navbar bg-neutral text-neutral-content shadow-md sticky top-0">
 	<div class="navbar-start"></div>
   <div class="navbar-center">
     <a href="/" class="btn btn-ghost normal-case text-xl">Dictafone</a>
