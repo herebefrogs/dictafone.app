@@ -17,7 +17,7 @@
 {:else}
 <div class="card mt-4 w-full bg-base-100 shadow-md">
   <div class="card-body">
-    <h2 class="card-title">
+    <h2 class="card-title capitalize">
       {transcript.name}
     </h2>
     <h3>

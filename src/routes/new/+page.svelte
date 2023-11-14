@@ -4,34 +4,31 @@
   import Transcript from '$lib/components/Transcript.svelte';
   import MicLevel from './MicLevel.svelte';
   import LanguageSelector from './LanguageSelector.svelte';
+  import Duration from '$lib/components/Duration.svelte';
   import { lines } from '$lib/stores/transcript';
   import { time } from './time';
   import { formatDuration } from '$lib/helpers/format';
   import { isAndroid } from '$lib/helpers/mobile';
 </script>
 
-<div class="card mt-4 w-full bg-base-100 shadow-md">
-  <div class="card-body">
+<div class="container flex flex-col sm:flex-row m-4 gap-5">
+  <Duration value={$time} />
 
-    <div class="flex">
-      <div class="stats shadow w-80 mr-8">
-        <div class="stat ">
-          <div class="stat-title">Duration</div>
-          <div class="stat-value font-mono">{formatDuration($time)}</div>
-        </div>
-      </div>
+  <LanguageSelector />
 
-      <LanguageSelector />
-
-      {#if !isAndroid}
-        <!-- this causes speech recognition to stop working on Chrome for Android -->
-        <MicLevel />
-      {/if}
-    </div>
-
-    <Transcript lines={$lines} />
-  </div>
+  {#if !isAndroid}
+    <!-- this causes speech recognition to stop working on Chrome for Android -->
+    <MicLevel />
+  {/if}
 </div>
+<div class="container bg-base-100 m-4 p-4 text-neutral rounded-lg shadow-md">
+  <Transcript lines={$lines} />
+</div>
+
+<!-- HACK: add enough padding at the bottom of the page that the
+  Actions bottom nav won't mask the last lines of the Transcript -->
+<div class="h-16" />
+
 <NameModal />
 
 <Actions />

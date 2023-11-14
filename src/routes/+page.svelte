@@ -20,6 +20,10 @@
   {/each}
 {/if}
 
+<!-- HACK: add enough padding at the bottom of the page that the
+  Actions bottom nav won't mask the last lines of the Transcript -->
+<div class="h-16" />
+
 <div class="btm-nav shadow">
   <a href="/new">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

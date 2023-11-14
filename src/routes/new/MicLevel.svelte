@@ -8,16 +8,14 @@
   $: width = 50 - 8*Math.log1p($micLevel) + 'px';
 </script>
 
-<div class="stats shadow w-32 h-26">
-  <div class="stat">
-    <div class="stat-title">Mic Level</div>
-    <div class="flex justify-around">
+<div class="container bg-base-100 p-4 rounded-lg shadow-md w-80">
+  <div class="text-neutral-content">Mic Level</div>
+    <div class="flex justify-center h-12 items-center">
       <div
         class:bg-accent={enabled}
         style:width
         style:height
       >
-    </div>
     </div>
   </div>
 </div>
