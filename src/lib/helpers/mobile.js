@@ -1,5 +1,17 @@
-export const isAndroid = /Android/i.test(navigator.userAgent);
+import { browser } from '$app/environment';
 
-export const isIOS = /iPhone|iPad/i.test(navigator.userAgent);
+let isAndroid = false;
+let isIOS = false;
+let isMobile = false;
 
-export const isMobile = isAndroid || isIOS;
+if (browser) {
+  isAndroid = /Android/i.test(navigator.userAgent);
+  isIOS = /iPhone|iPad/i.test(navigator.userAgent);
+  isMobile = isAndroid || isIOS;
+}
+
+export {
+  isAndroid,
+  isIOS,
+  isMobile,
+}
