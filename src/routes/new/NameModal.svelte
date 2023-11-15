@@ -6,10 +6,10 @@
 
   let emptyName = false;
 
-  const save = e => {
+  const save = async e => {
     if ($name) {
       $id = crypto.randomUUID();
-      transcripts.upsert({
+      await transcripts.upsert({
         id: $id,
         audio: $audio,
         date: Date.now(),

@@ -39,24 +39,30 @@ if (browser) {
 }
 
 // Svelte store logic
-const remove = id => {
-  db.transaction(['transcripts'], 'readwrite')
+const remove = id => new Promise((resolve, reject) => {
+  const request = db.transaction(['transcripts'], 'readwrite')
     .objectStore('transcripts')
     .delete(id)
-    .onsuccess = () => {
+
+  request.onsuccess = () => {
       update(transcripts => transcripts.filter(r => r.id !== id));
-    }
-};
+      resolve();
+  }
+  request.onerror = () => reject(`Failed to delete transcript from indexedDB - id: ${id}`);
+});
 
 const get = id => transcripts_value.find(r => r.id === id);
 
-const upsert = transcript => {
+const upsert = transcript => new Promise((resolve, reject) => {
   update(transcripts => {
     const index = transcripts.findIndex(r => r.id === transcript.id);
     if (index === -1) {
-      db.transaction(['transcripts'], 'readwrite')
+      const request = db.transaction(['transcripts'], 'readwrite')
       .objectStore('transcripts')
       .add(transcript);
+
+      request.onsuccess = () => resolve([...transcripts, transcript]);
+      request.onerror = () => reject(`Failed to insert transcript in indexedDB - id: ${transcript.id} name: ${transcript.name}}`);
 
       return [...transcripts, transcript];
     }
@@ -65,14 +71,17 @@ const upsert = transcript => {
         ...transcripts[index],
         ...transcript
       };
-      db.transaction(['transcripts'], 'readwrite')
+      const request = db.transaction(['transcripts'], 'readwrite')
       .objectStore('transcripts')
       .put(transcripts[index]);
+
+      request.onsuccess = () => resolve(transcripts);
+      request.onerror = () => reject(`Failed to update transcript in indexedDB - id: ${transcript.id} name: ${transcript.name}}`);
 
       return transcripts;
     }
   });
-};
+});
 
 export const transcripts = {
   subscribe,

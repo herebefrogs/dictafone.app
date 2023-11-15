@@ -6,8 +6,8 @@
 
   export let transcript;
 
-  const remove = () => {
-    transcripts.delete(transcript.id);
+  const remove = async () => {
+    await transcripts.delete(transcript.id);
     window.location.href = '/';
   }
 
