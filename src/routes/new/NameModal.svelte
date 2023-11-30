@@ -3,6 +3,8 @@
   import { id, audio, name, lines } from '$lib/stores/transcript';
   import { time } from './time';
   import { transcripts } from '$lib/stores/persistence';
+  import { fireEvent } from '$lib/helpers/analytics';
+
 
   let emptyName = false;
 
@@ -17,6 +19,7 @@
         lines: $lines,
         name: $name,
       })
+      fireEvent('transcript_save', { audio: $audio, duration: $time, lines: $lines });
       name_modal.close();
     } else {
       emptyName = true;
@@ -33,6 +36,9 @@
   const close = () => {
     emptyName = false;
     if (browser) {
+      if (!$id) {
+        fireEvent('transcript_abort', { audio: $audio, duration: $time, lines: $lines });
+      }
       window.location.href = $id ? `/${$id}` : '/';
     }
   }
