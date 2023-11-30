@@ -11,8 +11,11 @@
 {#if !transcripts_value}
 <Loading />
 {:else if transcripts_value.length === 0}
-<div class="flex justify-center content-stretch mt-12">
-  <p>No transcripts yet.</p>
+<div class="flex flex-col text-center content-stretch mt-12">
+  <p class="font-bold">Never lose a thought again!</p>
+  <p>Capture them whenever, wherever</p>
+  <p>with Dictafone's speech-to-text.</p>
+  <p class="mt-8">Press "New Transcript" to get started.</p>
 </div>
 {:else}
   {#each transcripts_value as transcript}
