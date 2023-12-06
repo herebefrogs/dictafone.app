@@ -1,4 +1,5 @@
 import { audio } from '$lib/stores/transcript';
+import { micPermission } from './micPermission';
 import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { isAndroid } from '$lib/helpers/mobile';
@@ -24,9 +25,10 @@ function start(set) {
     recorder = new MediaRecorder(stream);
     recorder.ondataavailable = onDataAvailable;
     set(recorder);
+    micPermission.set("granted");
   })
   .catch(err => {
-    throw new Error('Microphone not accessible. ' + err);
+    console.error('Microphone not accessible. ' + err);
   });
 
   return () => recorder && recorder.stop();

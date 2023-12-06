@@ -7,23 +7,28 @@
   import { fireEvent } from '$lib/helpers/analytics';
 
 
-  let emptyName = false;
+  let error = null;
 
   const save = async e => {
     if ($name) {
       $id = crypto.randomUUID();
-      await transcripts.upsert({
-        id: $id,
-        audio: $audio,
-        date: Date.now(),
-        duration: $time,
-        lines: $lines,
-        name: $name,
-      })
-      fireEvent('transcript_save', { audio: $audio, duration: $time, lines: $lines });
-      name_modal.close();
+      try {
+        await transcripts.insert({
+          id: $id,
+          audio: $audio,
+          date: Date.now(),
+          duration: $time,
+          lines: $lines,
+          name: $name,
+        })
+        fireEvent('transcript_save', { audio: $audio, duration: $time, lines: $lines });
+        name_modal.close();
+      } catch (msg) {
+        error = msg;
+        e.preventDefault();
+      }
     } else {
-      emptyName = true;
+      error = 'Transcript name can\'t be empty.';
       e.preventDefault();
     }
   }
@@ -35,7 +40,7 @@
   }
 
   const close = async () => {
-    emptyName = false;
+    error = false;
     if (browser) {
       if (!$id) {
         fireEvent('transcript_abort', { audio: $audio, duration: $time, lines: $lines });
@@ -50,10 +55,10 @@
     <h3 class="font-bold text-lg">Save Transcript</h3>
     <input bind:value={$name} on:keydown={keydown} type="text" placeholder="Enter a transcript name" class="input input-bordered w-full max-w-xs my-4" />
 
-    {#if emptyName}
+    {#if error}
     <div class="alert alert-error w-full max-w-xs mb-8">
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-      <span>Transcript name can't be empty.</span>
+      <span>{error}</span>
     </div>
     {/if}
 

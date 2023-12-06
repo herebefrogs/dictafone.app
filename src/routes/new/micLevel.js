@@ -63,7 +63,7 @@ function start(set) {
       paused.subscribe(p => toggleVolume($started, p));
     })
     .catch(err => {
-     throw new Error('Microphone not accessible. ' + err);
+      console.error('Microphone not accessible. ' + err);
     });
   }
 

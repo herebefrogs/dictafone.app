@@ -9,7 +9,7 @@
   
   let transcript;
 
-  transcripts.subscribe(() => { transcript = transcripts.get($page.params.id) });
+  transcripts.subscribe(async () => { transcript = await transcripts.get($page.params.id); });
 </script>
 
 {#if !transcript}
