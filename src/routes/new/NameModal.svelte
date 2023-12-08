@@ -1,10 +1,11 @@
 <script>
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { id, audio, name, lines } from '$lib/stores/transcript';
-  import { time } from './time';
-  import { transcripts } from '$lib/stores/persistence';
   import { fireEvent } from '$lib/helpers/analytics';
+  import Alert from '$lib/components/Alert.svelte';
+  import { id, audio, name, lines } from '$lib/stores/transcript';
+  import { transcripts } from '$lib/stores/persistence';
+  import { time } from './time';
 
 
   let error = null;
@@ -56,10 +57,7 @@
     <input bind:value={$name} on:keydown={keydown} type="text" placeholder="Enter a transcript name" class="input input-bordered w-full max-w-xs my-4" />
 
     {#if error}
-    <div class="alert alert-error w-full max-w-xs mb-8">
-      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-      <span>{error}</span>
-    </div>
+    <Alert message={error} klass="w-full max-w-xs mb-8" />
     {/if}
 
     <p class="my-4">Pressing ESC will delete this transcript.</p>
