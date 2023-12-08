@@ -4,6 +4,7 @@
   import { isAndroid } from '$lib/helpers/mobile';
   import { fireEvent } from '$lib/helpers/analytics';
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
 
   export let transcript;
 
@@ -52,7 +53,7 @@
   const remove = async () => {
     await transcripts.delete(transcript.id);
     fireEvent('transcript_delete', transcript)
-    window.location.href = '/';
+    await goto('/');
   }
 </script>
 

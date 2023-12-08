@@ -1,5 +1,6 @@
 <script>
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { id, audio, name, lines } from '$lib/stores/transcript';
   import { time } from './time';
   import { transcripts } from '$lib/stores/persistence';
@@ -33,13 +34,13 @@
     }
   }
 
-  const close = () => {
+  const close = async () => {
     emptyName = false;
     if (browser) {
       if (!$id) {
         fireEvent('transcript_abort', { audio: $audio, duration: $time, lines: $lines });
       }
-      window.location.href = $id ? `/${$id}` : '/';
+      await goto($id ? `/${$id}` : '/');
     }
   }
 </script>
