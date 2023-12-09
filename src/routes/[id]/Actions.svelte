@@ -1,7 +1,6 @@
 <script>
   import { transcripts } from '$lib/stores/persistence';
   import { formatTimestamp } from '$lib/helpers/format'
-  import { isAndroid } from '$lib/helpers/mobile';
   import { fireEvent } from '$lib/helpers/analytics';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
@@ -13,7 +12,7 @@
     {type: 'text/plain'}
   );
 
-  const audioExt = isAndroid ? null : /audio\/(\w+)/.exec(transcript.audio.type)[1];
+  const audioExt = transcript.audio ? /audio\/(\w+)/.exec(transcript.audio.type)[1] : null;
   const audioFilename = `${transcript.name}.${audioExt}`;
 
   const data = {
@@ -29,7 +28,7 @@
   };
 
   // audio recording is disabled on Android
-  if (!isAndroid) {
+  if (transcript.audio) {
     data.files.push(
       new File(
         [transcript.audio],
@@ -75,7 +74,7 @@
     </svg>
     <span class="text-base-content text-center">Download Text</span>
   </a>
-  {#if !isAndroid}
+  {#if transcript.audio}
   <a download={audioFilename} href={URL.createObjectURL(transcript.audio)} type={transcript.audio.type} class="flex flex-col items-center rounded-md bg-base-200 hover:bg-base-300 py-2 w-32 download-audio">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
