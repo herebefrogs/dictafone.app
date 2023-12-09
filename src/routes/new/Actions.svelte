@@ -1,17 +1,18 @@
 <script>
-  import { id, name, started, paused, lines } from '$lib/stores/transcript';
+  import { id, name, audio, started, paused, lines } from '$lib/stores/transcript';
   import { speechRecognition } from './speechRecognition';
   import { audioRecorder } from './audioRecorder'
   import { time } from './time';
   import { micPermission } from './micPermission';
 
-  const start_dictation = () => {
+  const start_dictation = async () => {
     $started = true;
     time.start();
     speechRecognition.start();
-    $audioRecorder.start();
+    await $audioRecorder.start();
     $id = null;
     $name = null;
+    $audio = null;
     $lines = [];
   }
 
