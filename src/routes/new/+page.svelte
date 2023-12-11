@@ -29,7 +29,7 @@
   {/if}
 </div>
 
-<Transcript lines={$lines} />
+<Transcript lines={$lines} autoscroll={true} />
 
 <NameModal />
 

@@ -61,7 +61,7 @@
   Actions bottom nav won't mask the last lines of the Transcript -->
 <div class="h-24" />
 
-<footer class="footer flex fixed justify-evenly bottom-0 left-0 w-full bg-base-100 border-t-2  py-2">
+<footer class="footer flex fixed justify-evenly bottom-0 left-0 w-full bg-base-100 border-t-2 py-2">
   <a href="/" class="flex flex-col items-center rounded-md bg-base-200 hover:bg-base-300 py-2 w-32">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />

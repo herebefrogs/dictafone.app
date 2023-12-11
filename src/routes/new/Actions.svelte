@@ -53,11 +53,12 @@
   });
 </script>
 
+
 <!-- HACK: add enough padding at the bottom of the page that the
   Actions bottom nav won't mask the last lines of the Transcript -->
 <div class="h-24" />
 
-<footer class="footer flex fixed justify-evenly bottom-0 left-0 w-full bg-base-100 border-t-2  py-2">
+<footer class="footer flex fixed justify-evenly bottom-0 left-0 w-full bg-base-100 border-t-2 py-2">
   <button on:click={pause_dictation} class:hidden={!$started || $paused} class="flex flex-col items-center rounded-md bg-base-200 hover:bg-base-300 py-2 w-32">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
