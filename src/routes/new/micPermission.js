@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
-export const micPermission = writable("prompt");
+export const micPermission = writable('prompt');
 
 if (browser) {
   navigator.permissions.query({ name: 'microphone' })

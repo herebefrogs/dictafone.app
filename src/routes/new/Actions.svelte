@@ -8,7 +8,6 @@
   const start_dictation = async () => {
     $started = true;
     time.start();
-    speechRecognition.start();
     await $audioRecorder.start();
     $id = null;
     $name = null;
@@ -19,14 +18,14 @@
   const pause_dictation = () => {
     $paused = true;
     time.pause();
-    speechRecognition.pause();
+    $speechRecognition.pause();
     $audioRecorder.pause();
   }
 
   const resume_dictation = () => {
     $paused = false;
     time.resume();
-    speechRecognition.resume();
+    $speechRecognition.resume();
     $audioRecorder.resume();
   }
 
@@ -34,10 +33,18 @@
     $started = false;
     $paused = false;
     time.stop();
-    speechRecognition.stop();
+    $speechRecognition.stop();
     $audioRecorder.stop();
     name_modal.showModal();
   }
+
+  // this will prompt the user for permission to use the microphone if not alreay granted
+  // NOTE: micLevel and audioRecorder call navigator.mediaDevices.getUserMedia() which prompts the user
+  // during their initialization, but they can't be relied on since disabled in Chrome for Android
+  // since they block SpeechRecognition on that platform.
+  // Unlike AudioRecorder and MediaRecorder, SpeechRecognition does not prompt the user for permission
+  // when instanciated, only when started.
+  $speechRecognition.start();
 
   micPermission.subscribe((value) => {
     if (value === 'granted') {
